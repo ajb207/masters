@@ -58,7 +58,10 @@ read.counts <- read.counts[!rownames(read.counts)=="N_ambiguous",]
 
 # remove unnecesary cell lines
 read.counts <- subset(read.counts,
-                      select = -c(`1123++`, `528++`, `1123-`,`528-`,  hNP1_old, hNP1_new, `17231`, `16157` ))
+                      select = -c(`1123++`, `528++`, 
+                                  `1123-`,`528-`, 
+                                  hNP1_old, hNP1_new, 
+                                  `17231`, `16157` ))
 
 # write this experiments counts to a file
 write.table(x = read.counts, 
@@ -77,17 +80,21 @@ cellline <- factor(c(1:8, 1:8))  #Factor for the samples used. 8 paired samples
 # create the design matrix based on the factors above
 design <- model.matrix(~ cellline + celltype)   
 
-# converting to DGEList
-# removing low count genes
-dge_counts <- DGEList(counts = read.counts[rowSums(cpm(read.counts) >= 1) >= 8,])
 
-# normalization
-dge_counts <- calcNormFactors(dge_counts,
-                              method = c("TMM"))
+# removing low count genes
+# convert to DGE List
+# Normalize
+dge_counts <- 
+  read.counts[rowSums(cpm(read.counts) >= 1) >= 8,] %>%
+  DGEList(counts = ) %>%
+  calcNormFactors(method = c("TMM"))
+
+
 
 #voom for creating converting RNA seq reads to microaray data for the pipeline
-voom_counts <- voom(dge_counts, 
-                    design, plot=TRUE)
+voom_counts <- voom(counts = dge_counts, 
+                    design = design,
+                    plot=TRUE)
 #MDS plot of the data
 plotMDS(x = dge_counts, 
         cex = 1,
