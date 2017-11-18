@@ -1,5 +1,7 @@
 
 
+source('global.R')
+
 #line count to get number of reads
 
 
