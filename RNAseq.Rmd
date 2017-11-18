@@ -77,43 +77,32 @@ EnsembltoHGNC <- function(countsData){
 
 #Function to import star counts from separate output folders
 #requires the folder containing all the star counts and the column for use. Almost always column 2
-importStarCounts <- function(folder, column){
+importStarCounts <- 
+  function(folder, column){
   
-  temp <- list.files(folder, full.names = TRUE)
-  counts <- lapply(temp, read.delim, header=FALSE, stringsAsFactors = FALSE)
-  file_names <- list.files(folder)
-  
-  counts <- lapply(counts, `[`, c(1,column))
-  #turn each express output into a dataframe and merge them
-  final_frame <- as.data.frame(counts[1])
-  colnames(final_frame) <- c("ensembl_id", file_names[1])
-  for(n in 2:length(counts)){
-    temp_frame <- as.data.frame(counts[n])
-    colnames(temp_frame) <- c("ensembl_id", file_names[n])
-    final_frame <- merge(final_frame, temp_frame, by = "ensembl_id", all =TRUE)
+    temp <- list.files(folder, full.names = TRUE)
+    counts <- lapply(temp, read.delim, header=FALSE, stringsAsFactors = FALSE)
+    file_names <- list.files(folder)
     
-  }
-  rownames(final_frame) <- final_frame$ensembl_id
-  final_frame <- subset(final_frame, select = -ensembl_id)
-  #final_frame[is.na(finalFrame)] <- 0
+    counts <- lapply(counts, `[`, c(1,column))
+    #turn each express output into a dataframe and merge them
+    final_frame <- as.data.frame(counts[1])
+    colnames(final_frame) <- c("ensembl_id", file_names[1])
+    for(n in 2:length(counts)){
+      temp_frame <- as.data.frame(counts[n])
+      colnames(temp_frame) <- c("ensembl_id", file_names[n])
+      final_frame <- merge(final_frame, temp_frame, by = "ensembl_id", all =TRUE)
+      
+    }
+    rownames(final_frame) <- final_frame$ensembl_id
+    final_frame <- subset(final_frame, select = -ensembl_id)
+    #final_frame[is.na(finalFrame)] <- 0
   
-  #final_frame <- final_frame[!final_frame$gene=="N_unmapped",]
-  #final_frame <- final_frame[!final_frame$gene=="N_multimapping",]
-  #final_frame <- final_frame[!final_frame$gene=="N_noFeature",]
-  #final_frame <- final_frame[!final_frame$gene=="N_ambiguous",]
   
   
   return(final_frame)
 }
 
-
-#and this if from bowtie
-importFeatureCounts <- function(countsFile){
-  dataset <- read.delim(paste("CountsandExpression/" , countsFile, sep = ""), stringsAsFactors=FALSE)
-  colnames(dataset) <- c("387++","456++","3359++","3691++","3832++","4121++","4302++","H2S++","387-","456-", "3359-","3691-","3832-","4121-","4302-","H2S-", "1123++","528++","1123-","528-")
-  dataset <- dataset[, c(1,2,3,4,5,6,7,8,17,18,9,10,11,12,13,14,15,16,19,20)]
-  return(dataset)
-}
 
 conversion <- read.table("../../conversion_sets/ensembl_conversion.txt", header = T)
 
@@ -126,7 +115,7 @@ conversion <- read.table("../../conversion_sets/ensembl_conversion.txt", header 
 ```{r GSC_vs_nonGSC}
 
 #load in the star counts
-read_counts <- importStarCounts("../star_v5/", column = 4)
+read_counts <-importStarCounts("../star_v5/", column = 4)
 colnames(read_counts) <- gsub(pattern = "_dna_ReadsPerGene.out.tab", 
                               "",
                               colnames(read_counts))
@@ -134,10 +123,14 @@ colnames(read_counts) <- gsub(pattern = "_dna_ReadsPerGene.out.tab",
 
 
 #change column names to the samples names form the data
-colnames(read_counts) <- c("387++","456++","3359++","3691++","3832++","4121++","4302++","H2S++","387-","456-", "3359-","3691-","3832-","4121-","4302-","H2S-", "1123++", "528++", "1123-", "528-", "hNP1_old","hNP1_new","17231","16157")
+colnames(read_counts) <- c("387++","456++","3359++","3691++","3832++","4121++","4302++","H2S++",
+                           "387-","456-", "3359-","3691-","3832-","4121-","4302-","H2S-", 
+                           "1123++", "528++", 
+                           "1123-", "528-", 
+                           "hNP1_old","hNP1_new","17231","16157")
 
-write.table(read_counts,
-            "../data/all_read_counts.txt",
+write.table(x = read_counts,
+            file = "../data/all_read_counts.txt",
             sep = "\t",
             col.names = T)
 
