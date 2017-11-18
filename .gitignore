@@ -3,3 +3,4 @@
 *.html
 *.RData
 *cache
+.Rproj.user
