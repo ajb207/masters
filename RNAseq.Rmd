@@ -17,7 +17,6 @@ source('RNAseq_functions.R')
 
 conversion <- read.table("../../conversion_sets/ensembl_conversion.txt", header = T)
 
-output.dir <- 
 
 
 ```
