@@ -1,0 +1,5 @@
+.R*
+*.Rdata
+*.html
+*.RData
+*cache
